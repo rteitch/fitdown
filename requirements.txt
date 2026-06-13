@@ -1,0 +1,11 @@
+# FitDown App Dependency Installation Guide
+# Run these commands in your project root to ensure all required packages are installed correctly:
+
+# 1. Core Expo SDK 56 Modules (ensures compatibility with your React Native version):
+npx expo install @react-native-async-storage/async-storage expo-linear-gradient expo-image expo-notifications expo-router expo-splash-screen expo-status-bar expo-symbols expo-system-ui expo-web-browser react-native-safe-area-context react-native-screens react-native-svg react-native-gesture-handler react-native-reanimated
+
+# 2. Third-party UI, Charting & State Management:
+npm install react-native-gifted-charts zustand date-fns nativewind@^4.2.5
+
+# 3. Development Dependencies:
+npm install -D tailwindcss postcss autoprefixer typescript @types/react

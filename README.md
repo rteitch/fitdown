@@ -1,56 +1,126 @@
-# Welcome to your Expo app 👋
+# FitDown 🏃‍♂️💪 — Weight Loss & Workout Tracker
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+FitDown adalah aplikasi asisten penurunan berat badan dan pelacak latihan harian berbasis **React Native (Expo SDK 56)** dan **TypeScript**. Aplikasi ini dirancang untuk mendampingi pengguna (terutama bagi klasifikasi *Obese Class II*) dalam mencapai berat badan ideal secara konsisten melalui program latihan 12 minggu, pelacak pola makan (diet), pemantau hidrasi, grafik progres berat badan, alarm terjadwal, dan pelacakan GPS secara real-time.
 
-## Get started
+---
 
-1. Install dependencies
+## 🚀 Fitur Utama & Struktur Sprint
 
-   ```bash
-   npm install
-   ```
+### 🏁 Sprint 1: Onboarding & Dashboard Personal
+* **Formulir Onboarding**: Input nama, jenis kelamin, usia, tinggi badan, berat awal, berat target, jam kerja, serta preferensi waktu latihan.
+* **Dashboard BMI Real-Time**: Kalkulasi otomatis BMI (*Body Mass Index*) dan klasifikasi obesitas (misalnya: Obesitas Kelas II pada BMI 36.1) lengkap dengan kartu progres visual menuju berat target.
+* **Progres Harian**: Kartu ringkasan aktivitas latihan, diet, dan hidrasi air minum.
 
-2. Start the app
+### 🏋️‍♂️ Sprint 2: Rencana Latihan & Alarm Cerdas
+* **Program Latihan 12 Minggu**: Terbagi menjadi 3 fase terstruktur (Fase 1: Adaptasi, Fase 2: Intensifikasi, Fase 3: Maksimalisasi).
+* **Timer Latihan Terintegrasi**: Timer otomatis untuk gerakan berbasis durasi (dalam detik) dan penghitung set/repetisi dengan getaran haptic saat latihan selesai/waktu istirahat habis.
+* **Ilustrasi Gerakan Presisi**: Visualisasi panduan postur gerakan spesifik (seperti Squat, Push-up, Plank, Superman, Crunches, Lunges, dll.) tanpa gambar placeholder generik.
+* **10 Alarm Bawaan Default**: Alarm terjadwal yang otomatis tersinkronisasi menggunakan `expo-notifications` berdasarkan preferensi jam latihan Anda (Pagi/Sore).
 
-   ```bash
-   npx expo start
-   ```
+### 🍎 Sprint 3: Diet, Hidrasi & Timbangan Berat Badan
+* **Checklist Menu Diet**: 4 sesi waktu makan (Sarapan, Makan Siang, Makan Malam, Cemilan) dengan rekomendasi jenis makanan sehat yang harus dikonsumsi dan dihindari.
+* **Pelacak Air Minum**: Perekaman konsumsi air putih dengan visual progress hingga mencapai target harian 8 gelas.
+* **Grafik Berat Badan Interaktif**: Tren penurunan berat badan disajikan dalam Line Chart dinamis (menggunakan `react-native-gifted-charts` di mobile dan SVG murni di web).
+* **8 Badges Pencapaian (Milestones)**: Penghargaan otomatis (seperti *First Step*, *Consistent*, *Halfway*, hingga *Target Achieved*) yang terbuka saat berat badan Anda turun atau kebiasaan terpenuhi.
 
-In the output, you'll find options to open the app in a
+### 📅 Sprint 4: Kalender Konsistensi & Statistik Kepatuhan
+* **Kalender Konsistensi Warna-Warni**: Indikator visual kebiasaan olahraga harian Anda:
+  - 🟢 **Hijau**: Sesi latihan berhasil diselesaikan.
+  - ⚪ **Abu-abu**: Hari istirahat terprogram (Rest Day).
+  - 🔴 **Merah**: Hari latihan terjadwal yang terlewatkan.
+  - 🔵 **Biru**: Hari latihan terjadwal mendatang.
+* **Statistik Kepatuhan**: Grafik persentase konsistensi mingguan dan pencatatan rekor *Streak* terpanjang secara otomatis.
+* **Dukungan Dark Mode Penuh**: Antarmuka adaptif yang sangat memukau baik dalam mode Terang (*Light Mode*) maupun Gelap (*Dark Mode*).
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### 🛰️ Sprint 5: Pelacakan GPS & Jarak Tempuh Lari/Jalan (Terbaru)
+* **Permintaan Izin Lokasi Perangkat**: Permintaan izin native akses lokasi (*foreground location permission*) secara otomatis ketika memulai latihan luar ruangan.
+* **Pelacakan Jarak Real-Time**: Penghitungan jarak tempuh kumulatif secara real-time menggunakan **Haversine Formula** pada latihan jalan atau lari (misal: Jalan Cepat, Jalan Santai, Jogging, dan Lari).
+* **Speedometer Real-Time**: Menampilkan kecepatan lari/jalan Anda saat ini (dalam km/jam) di dalam UI Timer.
+* **Keamanan Memori & Anti-Leak**: Pemantauan lokasi dibersihkan secara bersih (*unsubscribed*) saat latihan dijeda, rest-time, atau halaman ditutup untuk menghemat baterai HP.
+* **Riwayat Berbasis Jarak**: Informasi total jarak latihan disimpan ke `WorkoutLog` dan ditampilkan di samping lencana "Selesai" di riwayat latihan (misal: `Selesai • 2.5 km`).
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+---
 
-## Get a fresh project
+## 🛠️ Teknologi yang Digunakan
 
-When you're ready, run:
+* **Core Framework**: React Native & Expo (SDK 56)
+* **Bahasa Pemrograman**: TypeScript (Type-safe)
+* **Navigation / Routing**: Expo Router v3 (File-based Routing)
+* **State Management**: Zustand (dengan persistence `AsyncStorage`)
+* **Styling**: TailwindCSS via NativeWind v4 (CSS fleksibel & responsif)
+* **Charts & Grafik**: `react-native-gifted-charts` & SVG murni untuk Web
+* **API Perangkat (Native)**: 
+  - `expo-location` (GPS Tracking)
+  - `expo-notifications` (Sinkronisasi Alarm)
+  - `expo-image` (Image Caching)
 
+---
+
+## 📦 Cara Memulai
+
+### Prasyarat
+Pastikan Anda sudah menginstal [Node.js](https://nodejs.org/) (versi 18 ke atas) di perangkat Anda.
+
+### 1. Instalasi Dependensi
+Clone repository ini dan jalankan perintah berikut di direktori utama proyek untuk menginstal seluruh pustaka yang dibutuhkan:
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Atau gunakan file referensi kebutuhan instalasi jika ada modul tambahan:
+```bash
+pip install -r requirements.txt
+```
 
-### Other setup steps
+### 2. Menjalankan Aplikasi
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+* **Menjalankan Expo Dev Server**:
+  ```bash
+  npm run start
+  ```
+  *Gunakan aplikasi **Expo Go** di HP Android atau iOS Anda untuk memindai kode QR yang muncul.*
 
-## Learn more
+* **Menjalankan di Simulator iOS**:
+  ```bash
+  npm run ios
+  ```
 
-To learn more about developing your project with Expo, look at the following resources:
+* **Menjalankan di Emulator Android**:
+  ```bash
+  npm run android
+  ```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+* **Menjalankan di Browser (Web)**:
+  ```bash
+  npm run web
+  ```
 
-## Join the community
+---
 
-Join our community of developers creating universal apps.
+## 📂 Struktur Proyek Utama
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```text
+fitdown/
+├── assets/                  # Aset gambar panduan gerakan & ikon aplikasi
+├── src/
+│   ├── app/                 # Halaman-halaman rute (Expo Router)
+│   │   ├── (tabs)/          # Navigasi tab (Dashboard, Workout, Food, Tracker, Settings)
+│   │   ├── onboarding/      # Layar formulir pendaftaran pengguna baru
+│   │   └── workout/         # Layar detail gerakan dan Timer latihan (GPS)
+│   ├── components/          # Komponen UI umum, kartu statistik, & grafik timbangan
+│   ├── constants/           # Konstanta program latihan 12 minggu & pemetaan ilustrasi
+│   ├── hooks/               # Custom react hooks (timer latihan, dll.)
+│   ├── store/               # Global state (Zustand persistent store)
+│   └── utils/               # Fungsi pembantu tanggal (timezone-safe) & konversi
+├── requirements.txt         # Daftar paket instalasi proyek
+└── tsconfig.json            # Konfigurasi TypeScript
+```
+
+---
+
+## 🧪 Verifikasi Kode
+Untuk memverifikasi kesesuaian tipe data TypeScript pada seluruh proyek, jalankan:
+```bash
+npx tsc --noEmit
+```
+Jika tidak ada output kesalahan, kompilasi kode Anda dijamin 100% aman dan bebas dari masalah tipe data TypeScript.
