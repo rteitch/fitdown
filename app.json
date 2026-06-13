@@ -8,9 +8,11 @@
     "scheme": "fitdown",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "bundleIdentifier": "com.rteitch.fitdown"
     },
     "android": {
+      "package": "com.rteitch.fitdown",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
