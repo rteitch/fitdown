@@ -95,6 +95,33 @@ pip install -r requirements.txt
   npm run web
   ```
 
+### 🤖 Pembuatan Build untuk Android (APK/AAB)
+
+Aplikasi ini siap dibuild menjadi file APK (untuk pengujian langsung) atau AAB (untuk rilis resmi Google Play Store). Metode resmi dan termudah adalah menggunakan **EAS Build** (Expo Application Services):
+
+1. **Instal EAS CLI secara global**:
+   ```bash
+   npm install -g eas-cli
+   ```
+2. **Masuk ke Akun Expo**:
+   ```bash
+   eas login
+   ```
+3. **Inisialisasi Konfigurasi EAS**:
+   ```bash
+   eas build:configure
+   ```
+4. **Membuat Build**:
+   * **Membuat file APK (Preview / Testing)**:
+     ```bash
+     eas build --platform android --profile preview
+     ```
+     *Setelah proses kompilasi selesai di cloud, Anda akan menerima link download berkas `.apk` untuk langsung diinstal di HP fisik.*
+   * **Membuat file AAB (Rilis Play Store)**:
+     ```bash
+     eas build --platform android --profile production
+     ```
+
 ---
 
 ## 📂 Struktur Proyek Utama
