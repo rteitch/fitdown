@@ -10,6 +10,7 @@ import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Card } from '@/components/ui/Card';
 import { Image } from 'expo-image';
 import * as Location from 'expo-location';
+import { RouteMap } from '@/components/tracker/RouteMap';
 
 export default function WorkoutTimerScreen() {
   const router = useRouter();
@@ -46,8 +47,10 @@ export default function WorkoutTimerScreen() {
   // States & Refs Pelacakan GPS
   const [distance, setDistance] = useState(0);
   const [currentSpeed, setCurrentSpeed] = useState(0);
+  const [routeCoords, setRouteCoords] = useState<{ latitude: number; longitude: number }[]>([]);
   const lastCoordsRef = useRef<{ latitude: number; longitude: number } | null>(null);
   const totalDistanceRef = useRef(0);
+  const isGpsTrackingRef = useRef(false);
 
   const currentExercise = exercises[currentExerciseIndex];
 
@@ -120,7 +123,7 @@ export default function WorkoutTimerScreen() {
     const startTracking = async () => {
       if (Platform.OS === 'web') return;
       
-      if (isGpsSupported && isRunning && !isResting) {
+      if (isGpsSupported && isRunning) {
         try {
           const { status } = await Location.getForegroundPermissionsAsync();
           if (status !== 'granted') return;
@@ -141,6 +144,9 @@ export default function WorkoutTimerScreen() {
               const speedKmH = speed ? Math.max(0, speed * 3.6) : 0;
               setCurrentSpeed(speedKmH);
               
+              // Tambahkan koordinat ke rute untuk map
+              setRouteCoords((prev) => [...prev, { latitude, longitude }]);
+              
               if (lastCoordsRef.current) {
                 const dist = getHaversineDistance(
                   lastCoordsRef.current.latitude,
@@ -157,6 +163,7 @@ export default function WorkoutTimerScreen() {
               }
               
               lastCoordsRef.current = { latitude, longitude };
+              isGpsTrackingRef.current = true;
             }
           );
 
@@ -178,9 +185,9 @@ export default function WorkoutTimerScreen() {
       if (subscription) {
         subscription.remove();
       }
-      lastCoordsRef.current = null; // Reset baseline koordinat saat jeda timer
+      // Jangan reset lastCoordsRef di sini agar pelacakan tetap kontinu
     };
-  }, [isGpsSupported, isRunning, isResting]);
+  }, [isGpsSupported, isRunning]);
 
   // Jalankan timer jika bertipe durasi atau sedang istirahat
   useEffect(() => {
@@ -198,15 +205,7 @@ export default function WorkoutTimerScreen() {
     }
   }, [currentExerciseIndex, currentSet, isResting]);
 
-  // Efek ketika timer habis (detik === 0)
-  useEffect(() => {
-    if (seconds === 0 && isRunning) {
-      Vibration.vibrate(300);
-      handleStateTransition();
-    }
-  }, [seconds, isRunning]);
-
-  // Transisi Alur Timer
+  // Transisi Alur Timer (menggunakan ref agar tidak stale closure di dalam useEffect)
   const handleStateTransition = () => {
     if (isResting) {
       // Selesai istirahat -> Masuk ke latihan set berikutnya atau gerakan berikutnya
@@ -224,6 +223,17 @@ export default function WorkoutTimerScreen() {
       }
     }
   };
+
+  const transitionRef = useRef(handleStateTransition);
+  transitionRef.current = handleStateTransition;
+
+  // Efek ketika timer habis (detik === 0)
+  useEffect(() => {
+    if (seconds === 0 && isRunning) {
+      Vibration.vibrate(300);
+      transitionRef.current();
+    }
+  }, [seconds, isRunning]);
 
   const proceedToNextStep = () => {
     const hasMoreSets = currentSet < currentExercise.sets;
@@ -360,25 +370,35 @@ export default function WorkoutTimerScreen() {
 
         {/* Panel GPS Tracking */}
         {isGpsSupported && !isResting && (
-          <View className="flex-row gap-4 w-full px-4 mt-2 justify-center">
-            <Card className="flex-1 p-3 bg-emerald-500/5 dark:bg-emerald-500/10 border-emerald-500/20 items-center rounded-2xl shadow-none">
-              <View className="flex-row items-center gap-1">
-                <Ionicons name="map-outline" size={14} color="#10B981" />
-                <Text className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Jarak</Text>
-              </View>
-              <Text className="text-lg font-black text-slate-800 dark:text-white mt-1">
-                {distance.toFixed(2)} <Text className="text-[10px] font-bold text-slate-400">km</Text>
-              </Text>
-            </Card>
-            <Card className="flex-1 p-3 bg-emerald-500/5 dark:bg-emerald-500/10 border-emerald-500/20 items-center rounded-2xl shadow-none">
-              <View className="flex-row items-center gap-1">
-                <Ionicons name="speedometer-outline" size={14} color="#10B981" />
-                <Text className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Kecepatan</Text>
-              </View>
-              <Text className="text-lg font-black text-slate-800 dark:text-white mt-1">
-                {currentSpeed.toFixed(1)} <Text className="text-[10px] font-bold text-slate-400">km/h</Text>
-              </Text>
-            </Card>
+          <View className="w-full mt-2 gap-3">
+            {/* Map View (native only) */}
+            {routeCoords.length > 0 && Platform.OS !== 'web' && (
+              <Card className="overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-800 shadow-none">
+                <RouteMap routeCoords={routeCoords} />
+              </Card>
+            )}
+
+            {/* Distance & Speed Cards */}
+            <View className="flex-row gap-4 px-0 justify-center">
+              <Card className="flex-1 p-3 bg-emerald-500/5 dark:bg-emerald-500/10 border-emerald-500/20 items-center rounded-2xl shadow-none">
+                <View className="flex-row items-center gap-1">
+                  <Ionicons name="map-outline" size={14} color="#10B981" />
+                  <Text className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Jarak</Text>
+                </View>
+                <Text className="text-lg font-black text-slate-800 dark:text-white mt-1">
+                  {distance.toFixed(2)} <Text className="text-[10px] font-bold text-slate-400">km</Text>
+                </Text>
+              </Card>
+              <Card className="flex-1 p-3 bg-emerald-500/5 dark:bg-emerald-500/10 border-emerald-500/20 items-center rounded-2xl shadow-none">
+                <View className="flex-row items-center gap-1">
+                  <Ionicons name="speedometer-outline" size={14} color="#10B981" />
+                  <Text className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Kecepatan</Text>
+                </View>
+                <Text className="text-lg font-black text-slate-800 dark:text-white mt-1">
+                  {currentSpeed.toFixed(1)} <Text className="text-[10px] font-bold text-slate-400">km/h</Text>
+                </Text>
+              </Card>
+            </View>
           </View>
         )}
       </View>

@@ -28,6 +28,12 @@
     "plugins": [
       "expo-router",
       [
+        "react-native-maps",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow FitDown to access your location for GPS tracking during outdoor workouts."
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "backgroundColor": "#208AEF",
